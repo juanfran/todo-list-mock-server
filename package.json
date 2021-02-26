@@ -1,0 +1,22 @@
+{
+  "name": "todo-list-mock-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanfran/todo-list-mock-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juanfran/todo-list-mock-server/issues"
+  },
+  "homepage": "https://github.com/juanfran/todo-list-mock-server#readme",
+  "devDependencies": {
+    "express": "^4.17.1"
+  }
+}
