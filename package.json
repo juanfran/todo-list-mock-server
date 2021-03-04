@@ -18,5 +18,8 @@
   "homepage": "https://github.com/juanfran/todo-list-mock-server#readme",
   "devDependencies": {
     "express": "^4.17.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
   }
 }
