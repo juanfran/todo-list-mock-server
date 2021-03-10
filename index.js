@@ -1,12 +1,26 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const WebSocket = require('ws');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(cors());
+
+const connections = new Map();
+
+const wss = new WebSocket.Server({
+    port: 8080,
+});
+
+wss.on('connection', function connection(ws) {
+    const id = uuidv4();
+    connections.set(id, ws);
+    ws.send(JSON.stringify({msg: 'connected'}));
+});
 
 let todos = [
     {id: 0, name: 'to do 1', completed: false},
@@ -26,6 +40,12 @@ app.get('/todos', function(req, res) {
     res.json(todos);
 });
 
+function sendToAll(msg) {
+    for (const connection of connections.values()) {
+        connection.send(JSON.stringify(msg));
+    }
+}
+
 app.post('/todos', function(req, res) {
     const newData = {
         ...req.body,
@@ -35,7 +55,7 @@ app.post('/todos', function(req, res) {
     const sameTask = todos.find((todo) => todo.name === newData.name);
 
     if (sameTask) {
-        res.status(400).json({error: 'task already created'});
+        res.status(400).json({msg: 'task already created'});
         return;
     }
 
@@ -49,6 +69,8 @@ app.post('/todos', function(req, res) {
     newData.id = lastTodoId
 
     todos.push(newData);
+
+    sendToAll({type: 'new-task', task: newData});
 
     res.json(newData);
 });
@@ -68,7 +90,11 @@ app.patch('/todos/:id', function(req, res) {
         return todo;
     });
 
-    res.sendStatus(200);
+    const task = todos.find((todo) => todo.id === id);
+
+    sendToAll({type: 'update-task', task});
+
+    res.json(task);
 });
 
 
@@ -77,7 +103,9 @@ app.delete('/todos/:id', function(req, res) {
 
     todos = todos.filter((todo) => todo.id != id);
 
-    res.sendStatus(200);
+    sendToAll({type: 'delete-task', id});
+
+    res.json({});
 });
 
 app.listen(3000);
