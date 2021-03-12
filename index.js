@@ -77,7 +77,7 @@ app.post('/todos', function(req, res) {
 
 
 app.patch('/todos/:id', function(req, res) {
-    const id = req.params.id;
+    const id = Number(req.params.id);
 
     todos = todos.map((todo) => {
         if (todo.id === id) {
@@ -99,9 +99,9 @@ app.patch('/todos/:id', function(req, res) {
 
 
 app.delete('/todos/:id', function(req, res) {
-    const id = req.params.id;
+    const id = Number(req.params.id);
 
-    todos = todos.filter((todo) => todo.id != id);
+    todos = todos.filter((todo) => todo.id !== id);
 
     sendToAll({type: 'delete-task', id});
 
